@@ -14,6 +14,7 @@ describe('CreateUser use case', () => {
       email: 'test-email',
       role: 'test-role',
       password: 'test-password',
+      provider: 'local' as const,
     };
 
     const { user } = await createUser.execute(params);

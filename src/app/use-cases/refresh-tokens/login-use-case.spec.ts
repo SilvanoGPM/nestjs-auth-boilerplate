@@ -1,3 +1,4 @@
+import { FakeJWTAdapter } from '@test/adapters/fake-jwt-adapter';
 import {
   makeRefreshToken,
   makeRepository,
@@ -14,16 +15,17 @@ describe('Login use case', () => {
 
     const refreshTokenRepository = makeRepository([initialToken]);
 
+    const jwtAdapter = new FakeJWTAdapter(refreshTokenRepository);
+
     const createRefreshToken = new CreateRefreshTokenUseCase(
       refreshTokenRepository,
     );
 
-    const generateAccessToken = new GenerateAccessTokenUseCase(
-      refreshTokenRepository,
-    );
+    const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const login = new LoginUseCase(
       refreshTokenRepository,
+      jwtAdapter,
       createRefreshToken,
       generateAccessToken,
     );
@@ -46,16 +48,17 @@ describe('Login use case', () => {
   it('should not be able to login when email or password is incorrect', async () => {
     const refreshTokenRepository = makeRepository();
 
+    const jwtAdapter = new FakeJWTAdapter(refreshTokenRepository);
+
     const createRefreshToken = new CreateRefreshTokenUseCase(
       refreshTokenRepository,
     );
 
-    const generateAccessToken = new GenerateAccessTokenUseCase(
-      refreshTokenRepository,
-    );
+    const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const login = new LoginUseCase(
       refreshTokenRepository,
+      jwtAdapter,
       createRefreshToken,
       generateAccessToken,
     );

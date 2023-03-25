@@ -1,3 +1,4 @@
+import { FakeJWTAdapter } from '@test/adapters/fake-jwt-adapter';
 import {
   makeRefreshToken,
   makeRepository as makeRefreshTokenRepository,
@@ -28,16 +29,16 @@ describe('RefreshAccessToken use case', () => {
 
     const refreshTokenRepository = makeRefreshTokenRepository([initialToken]);
 
+    const jwtAdapter = new FakeJWTAdapter(refreshTokenRepository);
+
     const getRefreshTokenByToken = new GetRefreshTokenByTokenUseCase(
       refreshTokenRepository,
     );
 
-    const generateAccessToken = new GenerateAccessTokenUseCase(
-      refreshTokenRepository,
-    );
+    const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const refreshAccessToken = new RefreshAccessTokenUseCase(
-      refreshTokenRepository,
+      jwtAdapter,
       getUserById,
       getRefreshTokenByToken,
       generateAccessToken,
@@ -61,7 +62,9 @@ describe('RefreshAccessToken use case', () => {
 
     const refreshTokenRepository = makeRefreshTokenRepository([initialToken]);
 
-    refreshTokenRepository.verify = async () => {
+    const jwtAdapter = new FakeJWTAdapter(refreshTokenRepository);
+
+    jwtAdapter.verify = async () => {
       return {
         sub: makeUser().id ?? '',
       };
@@ -71,12 +74,10 @@ describe('RefreshAccessToken use case', () => {
       refreshTokenRepository,
     );
 
-    const generateAccessToken = new GenerateAccessTokenUseCase(
-      refreshTokenRepository,
-    );
+    const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const refreshAccessToken = new RefreshAccessTokenUseCase(
-      refreshTokenRepository,
+      jwtAdapter,
       getUserById,
       getRefreshTokenByToken,
       generateAccessToken,
