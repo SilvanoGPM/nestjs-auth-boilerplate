@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { RefreshTokenRepository } from '@app/repositories/refresh-token-repository';
 import { JWTAdapter } from '@app/adapters/jwt-adapter';
 
 import { GenerateAccessTokenUseCase } from './generate-access-token-use-case';
@@ -17,7 +16,6 @@ interface ExecuteParams {
 @Injectable()
 export class LoginUseCase {
   constructor(
-    private refreshTokenRepository: RefreshTokenRepository,
     private jwtAdapter: JWTAdapter,
     private createRefreshToken: CreateRefreshTokenUseCase,
     private generateAccessToken: GenerateAccessTokenUseCase,

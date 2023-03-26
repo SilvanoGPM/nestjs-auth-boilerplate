@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsStrongPassword,
   IsUrl,
@@ -20,6 +21,7 @@ export class CreateUserDTO {
   @IsStrongPassword()
   password: string;
 
+  @IsOptional()
   @IsString()
   @IsUrl()
   picture: string;

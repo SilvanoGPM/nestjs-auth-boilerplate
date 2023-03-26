@@ -111,7 +111,7 @@ export class AuthController {
   @UseGuards(IsUser)
   async revoke(@CurrentUser() user: User, @Param('id') id: string) {
     try {
-      await this.revokeRefreshToken.execute(id, user.email);
+      await this.revokeRefreshToken.execute(id, user);
     } catch (error) {
       if (error instanceof InsufficientPermissionError) {
         throw new ForbiddenException('Forbidden', {

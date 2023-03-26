@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { RefreshTokenRepository } from '@app/repositories/refresh-token-repository';
+import { User } from '@app/entities/user';
 
 import { GetRefreshTokenByIdUseCase } from './get-refresh-token-by-id-use-case';
 import { InsufficientPermissionError } from '../errors/insufficient-permission.error';
@@ -12,12 +13,14 @@ export class RevokeRefreshTokenUseCase {
     private getRefreshTokenById: GetRefreshTokenByIdUseCase,
   ) {}
 
-  async execute(id: string, email: string) {
+  async execute(id: string, user: User) {
     const { refreshToken } = await this.getRefreshTokenById.execute(id);
 
-    const isOwner = refreshToken.user.email === email;
+    const isOwner = refreshToken.user.email === user.email;
+    const isAdmin = user.role === 'admin';
+    const isAllowed = isOwner || isAdmin;
 
-    if (!isOwner) {
+    if (!isAllowed) {
       throw new InsufficientPermissionError();
     }
 

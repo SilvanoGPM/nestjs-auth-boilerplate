@@ -4,10 +4,12 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { UserRepository } from '@app/repositories/user-repository';
 import { RefreshTokenRepository } from '@app/repositories/refresh-token-repository';
+import { JWTAdapter } from '@app/adapters/jwt-adapter';
 
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaUserRepository } from './prisma/repositories/prisma-user-repository';
 import { PrismaRefreshTokenRepository } from './prisma/repositories/prisma-refresh-token-repository';
+import { PrismaJWTAdapter } from './prisma/adapters/prisma-jwt-adapter';
 
 @Module({
   imports: [
@@ -21,6 +23,10 @@ import { PrismaRefreshTokenRepository } from './prisma/repositories/prisma-refre
     PrismaService,
 
     {
+      provide: JWTAdapter,
+      useClass: PrismaJWTAdapter,
+    },
+    {
       provide: UserRepository,
       useClass: PrismaUserRepository,
     },
@@ -29,6 +35,6 @@ import { PrismaRefreshTokenRepository } from './prisma/repositories/prisma-refre
       useClass: PrismaRefreshTokenRepository,
     },
   ],
-  exports: [UserRepository, RefreshTokenRepository],
+  exports: [UserRepository, RefreshTokenRepository, JWTAdapter],
 })
 export class DatabaseModule {}

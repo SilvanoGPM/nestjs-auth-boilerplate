@@ -27,7 +27,7 @@ describe('RevokeRefreshToken use case', () => {
 
     const refreshToken = repositoryData[0];
 
-    await revokeRefreshToken.execute(refreshToken.id, makeUser().email);
+    await revokeRefreshToken.execute(refreshToken.id, makeUser());
 
     expect(refreshTokenRepository.refreshTokens.length).toEqual(
       TOTAL_ELEMENTS - 1,
@@ -57,7 +57,7 @@ describe('RevokeRefreshToken use case', () => {
     expect(() => {
       return revokeRefreshToken.execute(
         refreshToken.id,
-        makeUser({ email: 'other@mail.com' }).email,
+        makeUser({ email: 'other@mail.com' }),
       );
     }).rejects.toThrow(InsufficientPermissionError);
   });

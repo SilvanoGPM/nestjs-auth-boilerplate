@@ -1,7 +1,7 @@
 import { User as PrismaUser } from '@prisma/client';
 import { hashSync } from 'bcrypt';
 
-import { User } from '@app/entities/user';
+import { Provider, User } from '@app/entities/user';
 
 export class PrismaUserMapper {
   static toDomain(rawUser: PrismaUser) {
@@ -13,7 +13,7 @@ export class PrismaUserMapper {
       password: rawUser.password,
       name: rawUser.name,
       role: rawUser.role,
-      provider: rawUser.provider,
+      provider: rawUser.provider as Provider,
       picture: rawUser.picture,
     });
   }
@@ -22,7 +22,7 @@ export class PrismaUserMapper {
     return {
       id: user.id,
       email: user.email,
-      password: hashSync(user.password, 10),
+      password: user.password ? hashSync(user.password, 10) : null,
       name: user.name,
       role: user.role,
       provider: user.provider,

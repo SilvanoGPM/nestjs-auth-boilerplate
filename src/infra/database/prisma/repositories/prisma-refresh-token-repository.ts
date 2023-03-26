@@ -1,6 +1,4 @@
 import { Prisma } from '@prisma/client';
-import { compare } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 
 import { RefreshToken } from '@app/entities/refresh-token';
@@ -9,10 +7,8 @@ import { Pageable } from '@app/repositories/pages.type';
 import { RefreshTokenRepository } from '@app/repositories/refresh-token-repository';
 
 import { PrismaService } from '../prisma.service';
-import { PrismaRefreshTokenMapper } from '../mappers/prisma-refresh-token-mapper';
-import { PrismaUserMapper } from '../mappers/prisma-user-mapper';
-import { TokenExpiredError } from '../errors/token-expired.error';
 
+import { PrismaRefreshTokenMapper } from '../mappers/prisma-refresh-token-mapper';
 interface GetPageParams {
   size: number;
   page: number;
@@ -25,7 +21,7 @@ const globalInclude = {
 
 @Injectable()
 export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(private prisma: PrismaService) {}
 
   async findManyByUser(user: User, pageable: Pageable) {
     return this.getPage({
@@ -57,40 +53,6 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
         token: refreshToken.token,
       },
     });
-  }
-
-  async sign(payload: { sub: string }, expiresIn?: string | number) {
-    return this.jwtService.sign(payload, {
-      expiresIn,
-    });
-  }
-
-  async verify(token: string) {
-    try {
-      const { sub } = this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
-
-      return { sub };
-    } catch (error: any) {
-      if (error.name === 'TokenExpiredError') {
-        throw new TokenExpiredError(error.expiredAt);
-      }
-
-      throw error;
-    }
-  }
-
-  async validateUser(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-
-    const isSamePassword = user && (await compare(password, user.password));
-
-    if (!isSamePassword) {
-      return null;
-    }
-
-    return PrismaUserMapper.toDomain(user);
   }
 
   private async getPage({ page, size, where }: GetPageParams) {

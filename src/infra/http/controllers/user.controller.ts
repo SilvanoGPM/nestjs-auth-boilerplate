@@ -88,7 +88,7 @@ export class UserController {
       throw new UserAlreadyExists(email);
     }
 
-    const user = await this.createUser.execute({
+    const { user } = await this.createUser.execute({
       email,
       password,
       name,
