@@ -24,7 +24,6 @@ describe('Login use case', () => {
     const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const login = new LoginUseCase(
-      refreshTokenRepository,
       jwtAdapter,
       createRefreshToken,
       generateAccessToken,
@@ -57,7 +56,6 @@ describe('Login use case', () => {
     const generateAccessToken = new GenerateAccessTokenUseCase(jwtAdapter);
 
     const login = new LoginUseCase(
-      refreshTokenRepository,
       jwtAdapter,
       createRefreshToken,
       generateAccessToken,

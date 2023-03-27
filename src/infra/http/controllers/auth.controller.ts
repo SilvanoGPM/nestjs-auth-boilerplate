@@ -25,6 +25,7 @@ import { GetRefreshTokensByUserUseCase } from '@app/use-cases/refresh-tokens/get
 import { Pageable } from '@app/repositories/pages.type';
 import { RevokeRefreshTokenUseCase } from '@app/use-cases/refresh-tokens/revoke-refresh-token-use-case';
 import { InsufficientPermissionError } from '@app/use-cases/errors/insufficient-permission.error';
+import { GoogleLoginUseCase } from '@app/use-cases/refresh-tokens/google-login-use-case';
 
 import { LoginDTO } from '../dtos/refresh-tokens/login.dto';
 import { RefreshTokenDTO } from '../dtos/refresh-tokens/refresh-token.dto';
@@ -39,7 +40,8 @@ export class AuthController {
   private deviceDetector = new DeviceDetector();
 
   constructor(
-    private login: LoginUseCase,
+    private loginOnLocal: LoginUseCase,
+    private loginWithGoogle: GoogleLoginUseCase,
     private getRefreshTokensByUser: GetRefreshTokensByUserUseCase,
     private refreshAccessToken: RefreshAccessTokenUseCase,
     private revokeRefreshToken: RevokeRefreshTokenUseCase,
@@ -61,7 +63,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async _login(@Body() loginDto: LoginDTO, @Req() req: Request) {
+  async localLogin(@Body() loginDto: LoginDTO, @Req() req: Request) {
     const userAgent = this.deviceDetector.parse(
       req.headers['user-agent'] || '',
     );
@@ -69,11 +71,34 @@ export class AuthController {
     const { email, password } = loginDto;
 
     try {
-      const data = await this.login.execute({
+      const data = await this.loginOnLocal.execute({
         email,
         password,
         browser: userAgent.client?.name || 'Unknown',
         os: userAgent.os?.name || 'Unknown',
+      });
+
+      return data;
+    } catch (error: any) {
+      throw new UnauthorizedException('Unauthorized', {
+        cause: error,
+        description: error.message,
+      });
+    }
+  }
+
+  @Post('login/google')
+  @HttpCode(HttpStatus.OK)
+  async googleLogin(@Body('token') token: string, @Req() req: Request) {
+    const userAgent = this.deviceDetector.parse(
+      req.headers['user-agent'] || '',
+    );
+
+    try {
+      const data = await this.loginWithGoogle.execute({
+        token,
+        browser: userAgent.client?.name,
+        os: userAgent.os?.name,
       });
 
       return data;

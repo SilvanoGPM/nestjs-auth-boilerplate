@@ -1,6 +1,6 @@
 import { BaseEntity, BaseEntityProps } from './base-entity';
 
-export type Provider = 'local';
+export type Provider = 'local' | 'google';
 
 export interface UserProps {
   name: string;

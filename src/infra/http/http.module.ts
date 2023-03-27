@@ -22,6 +22,9 @@ import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './auth/strategies/refresh.strategy';
 import { ReplaceUserUseCase } from '@app/use-cases/users/replace-user-use-case';
 import { PromoteUserUseCase } from '@app/use-cases/users/promote-user-use-case';
+import { GoogleLoginUseCase } from '@app/use-cases/refresh-tokens/google-login-use-case';
+import { GoogleClientAdapter } from '@app/adapters/google-client-adapter';
+import { HTTPGoogleClientAdapter } from './adapters/http-google-client-adapter';
 
 @Module({
   imports: [DatabaseModule],
@@ -37,7 +40,13 @@ import { PromoteUserUseCase } from '@app/use-cases/users/promote-user-use-case';
     CreateUserUseCase,
     UserExistsByEmailUseCase,
 
+    {
+      provide: GoogleClientAdapter,
+      useClass: HTTPGoogleClientAdapter,
+    },
+
     LoginUseCase,
+    GoogleLoginUseCase,
     RefreshAccessTokenUseCase,
     CreateRefreshTokenUseCase,
     GenerateAccessTokenUseCase,
