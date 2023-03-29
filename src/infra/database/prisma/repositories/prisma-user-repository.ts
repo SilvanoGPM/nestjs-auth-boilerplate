@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 
 import { User } from '@app/entities/user';
 import { Pageable } from '@app/repositories/pages.type';
-import { UserRepository } from '@app/repositories/user-repository';
+import { UserRepository, UserSearch } from '@app/repositories/user-repository';
 
 import { PrismaService } from '../prisma.service';
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper';
@@ -20,6 +20,20 @@ export class PrismaUserRepository implements UserRepository {
 
   async findMany(pageable: Pageable) {
     return this.getPage(pageable);
+  }
+
+  async search({ page, size, provider, role, ...query }: UserSearch) {
+    return this.getPage({
+      page,
+      size,
+      where: {
+        AND: {
+          name: { contains: query.name },
+          provider,
+          role,
+        },
+      },
+    });
   }
 
   async findByEmail(email: string) {
