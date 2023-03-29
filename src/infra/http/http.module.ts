@@ -14,16 +14,17 @@ import { GetRefreshTokensByUserUseCase } from '@app/use-cases/refresh-tokens/get
 import { RevokeRefreshTokenUseCase } from '@app/use-cases/refresh-tokens/revoke-refresh-token-use-case';
 import { GetUserByIdUseCase } from '@app/use-cases/users/get-user-by-id-use-case';
 import { GetRefreshTokenByIdUseCase } from '@app/use-cases/refresh-tokens/get-refresh-token-by-id-use-case';
+import { SearchUsersUseCase } from '@app/use-cases/users/search-users-use-case';
+import { ReplaceUserUseCase } from '@app/use-cases/users/replace-user-use-case';
+import { PromoteUserUseCase } from '@app/use-cases/users/promote-user-use-case';
+import { GoogleLoginUseCase } from '@app/use-cases/refresh-tokens/google-login-use-case';
+import { GoogleClientAdapter } from '@app/adapters/google-client-adapter';
 
 import { GenericService } from './services/generic.service';
 import { UserController } from './controllers/user.controller';
 import { AuthController } from './controllers/auth.controller';
 import { JwtStrategy } from './auth/strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './auth/strategies/refresh.strategy';
-import { ReplaceUserUseCase } from '@app/use-cases/users/replace-user-use-case';
-import { PromoteUserUseCase } from '@app/use-cases/users/promote-user-use-case';
-import { GoogleLoginUseCase } from '@app/use-cases/refresh-tokens/google-login-use-case';
-import { GoogleClientAdapter } from '@app/adapters/google-client-adapter';
 import { HTTPGoogleClientAdapter } from './adapters/http-google-client-adapter';
 
 @Module({
@@ -35,6 +36,7 @@ import { HTTPGoogleClientAdapter } from './adapters/http-google-client-adapter';
     JwtRefreshTokenStrategy,
 
     GetAllUsersUseCase,
+    SearchUsersUseCase,
     GetUserByEmailUseCase,
     GetUserByIdUseCase,
     CreateUserUseCase,
