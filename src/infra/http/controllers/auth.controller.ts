@@ -74,8 +74,8 @@ export class AuthController {
       const data = await this.loginOnLocal.execute({
         email,
         password,
-        browser: userAgent.client?.name || 'Unknown',
-        os: userAgent.os?.name || 'Unknown',
+        browser: userAgent.client?.name,
+        os: userAgent.os?.name,
       });
 
       return data;

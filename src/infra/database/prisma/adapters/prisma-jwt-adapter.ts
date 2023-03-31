@@ -7,6 +7,7 @@ import { PrismaService } from '@infra/database/prisma/prisma.service';
 
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper';
 import { TokenExpiredError } from '../errors/token-expired.error';
+import { InvalidProviderError } from '@app/use-cases/errors/invalid-provider.error';
 
 @Injectable()
 export class PrismaJWTAdapter implements JWTAdapter {
@@ -36,6 +37,10 @@ export class PrismaJWTAdapter implements JWTAdapter {
 
   async validateUser(email: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
+
+    if (user?.provider && user?.provider !== 'local') {
+      throw new InvalidProviderError(user.provider);
+    }
 
     const isSamePassword =
       user && (await compare(password, String(user.password)));
