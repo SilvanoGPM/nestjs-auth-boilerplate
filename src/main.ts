@@ -8,8 +8,12 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const origin = process.env.ORIGINS
+    ? String(process.env.ORIGINS).split(', ')
+    : '*';
+
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin,
   });
 
   app.useGlobalPipes(new ValidationPipe({ errorHttpStatusCode: 422 }));
@@ -21,7 +25,9 @@ async function bootstrap() {
     prefix: 'api/v',
   });
 
-  await app.listen(8080);
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+
+  await app.listen(port);
 }
 
 bootstrap();
