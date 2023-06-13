@@ -1,9 +1,35 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  UnprocessableEntityException,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
+
 import { NestFactory } from '@nestjs/core';
 
 import { HttpExceptionFilter } from '@infra/http/filters/http-exception-filter';
 
 import { AppModule } from './app.module';
+
+export const validationPipe = new ValidationPipe({
+  errorHttpStatusCode: 422,
+  exceptionFactory: (errors) => {
+    const fields = errors.map((error) => ({
+      [error.property]: error.constraints
+        ? Object.values(error.constraints || {})
+        : error.children
+        ? error.children?.flatMap((child) =>
+            Object.values(child.constraints || {}),
+          )
+        : [],
+    }));
+
+    return new UnprocessableEntityException(fields, {
+      description:
+        process.env.GENERIC_VALIDATION_ERROR_MESSAGE ||
+        'Error validating fields',
+    });
+  },
+});
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +45,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
-  app.useGlobalPipes(new ValidationPipe({ errorHttpStatusCode: 422 }));
+  app.useGlobalPipes(validationPipe);
   app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableVersioning({
