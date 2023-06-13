@@ -12,8 +12,11 @@ async function bootstrap() {
     ? String(process.env.ORIGINS).split(', ')
     : '*';
 
+  const originToAll = origin === '*';
+
   app.enableCors({
-    origin,
+    origin: originToAll ? true : origin,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
   app.useGlobalPipes(new ValidationPipe({ errorHttpStatusCode: 422 }));
