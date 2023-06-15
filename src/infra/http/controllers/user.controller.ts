@@ -71,7 +71,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(IsUser)
-  async getProfile(@CurrentUser() user: User) {
+  async me(@CurrentUser() user: User) {
     return user;
   }
 
