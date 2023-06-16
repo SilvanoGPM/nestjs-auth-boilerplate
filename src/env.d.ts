@@ -9,5 +9,7 @@ declare namespace NodeJS {
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     GENERIC_VALIDATION_ERROR_MESSAGE?: string;
+    UNAUTHORIZARED_ERROR_MESSAGE?: string;
+    FORBIDDEN_ERROR_MESSAGE?: string;
   }
 }

@@ -80,10 +80,13 @@ export class AuthController {
 
       return data;
     } catch (error: any) {
-      throw new UnauthorizedException('Unauthorized', {
-        cause: error,
-        description: error.message,
-      });
+      throw new UnauthorizedException(
+        process.env.UNAUTHORIZARED_ERROR_MESSAGE || 'Unauthorized',
+        {
+          cause: error,
+          description: error.message,
+        },
+      );
     }
   }
 
@@ -103,10 +106,13 @@ export class AuthController {
 
       return data;
     } catch (error: any) {
-      throw new UnauthorizedException('Unauthorized', {
-        cause: error,
-        description: error.message,
-      });
+      throw new UnauthorizedException(
+        process.env.UNAUTHORIZARED_ERROR_MESSAGE || 'Unauthorized',
+        {
+          cause: error,
+          description: error.message,
+        },
+      );
     }
   }
 
@@ -123,10 +129,13 @@ export class AuthController {
       if (error instanceof TokenExpiredError) {
         throw new RefreshTokenExpiredError(error);
       } else {
-        throw new UnauthorizedException('Unauthorized', {
-          cause: error,
-          description: error.message,
-        });
+        throw new UnauthorizedException(
+          process.env.UNAUTHORIZARED_ERROR_MESSAGE || 'Unauthorized',
+          {
+            cause: error,
+            description: error.message,
+          },
+        );
       }
     }
   }
@@ -139,10 +148,13 @@ export class AuthController {
       await this.revokeRefreshToken.execute(id, user);
     } catch (error) {
       if (error instanceof InsufficientPermissionError) {
-        throw new ForbiddenException('Forbidden', {
-          cause: error,
-          description: error.message,
-        });
+        throw new ForbiddenException(
+          process.env.FORBIDDEN_ERROR_MESSAGE || 'Forbidden',
+          {
+            cause: error,
+            description: error.message,
+          },
+        );
       }
 
       throw new RefreshTokenNotFoundError(error);
