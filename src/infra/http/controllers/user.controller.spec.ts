@@ -185,13 +185,6 @@ describe('UserController', () => {
         phone: 'test-phone',
         cpf: 'test-cpf',
         picture: 'test-picture',
-        location: {
-          state: 'test-state',
-          city: 'test-city',
-          street: 'test-street',
-          referencePoint: 'test-reference-point',
-          number: 1,
-        },
       };
 
       const { user } = await userController.create(params);
@@ -214,18 +207,44 @@ describe('UserController', () => {
         phone: 'test-phone',
         cpf: 'test-cpf',
         picture: 'test-picture',
-        location: {
-          state: 'test-state',
-          city: 'test-city',
-          street: 'test-street',
-          referencePoint: 'test-reference-point',
-          number: 1,
-        },
       };
 
       expect(() => {
         return userController.create(params);
       }).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('replace', () => {
+    it('should be able to replace an user', async () => {
+      const initialUser = makeUser();
+
+      userRepository.users.push(initialUser);
+
+      const params = {
+        name: 'new-test-user-updated',
+        picture: 'new-test-picture',
+      };
+
+      const { user } = await userController.replace(initialUser, params);
+
+      expect(userRepository.users).toHaveLength(1);
+      expect(userRepository.users[0]).toEqual(user);
+      expect(initialUser.name).not.toEqual(user.name);
+      expect(user).toBeInstanceOf(User);
+    });
+
+    it('should not be able to replace an user when it does not exists', async () => {
+      const initialUser = makeUser();
+
+      const params = {
+        name: 'new-test-user-updated',
+        picture: 'new-test-picture',
+      };
+
+      expect(() => {
+        return userController.replace(initialUser, params);
+      }).rejects.toThrow(UserNotFoundError);
     });
   });
 

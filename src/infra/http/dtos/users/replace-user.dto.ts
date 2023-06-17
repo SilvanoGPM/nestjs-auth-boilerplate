@@ -1,11 +1,18 @@
-import { IsNotEmpty, IsStrongPassword, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 
 export class ReplaceUserDTO {
   @IsNotEmpty()
   @Length(5)
   name: string;
 
-  @IsNotEmpty()
-  @IsStrongPassword()
-  password: string;
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  picture?: string | null;
 }

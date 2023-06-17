@@ -123,16 +123,16 @@ export class UserController {
     @Body() replaceUserDto: ReplaceUserDTO,
   ) {
     try {
-      const { id, email, role, picture, provider } = currentUser;
+      const { id, email, role, password, provider } = currentUser;
 
       const { user } = await this.replaceUser.execute({
         id,
         role,
         email,
-        picture,
         provider,
+        password,
+        picture: replaceUserDto.picture,
         name: replaceUserDto.name,
-        password: replaceUserDto.password,
       });
 
       return { user };
