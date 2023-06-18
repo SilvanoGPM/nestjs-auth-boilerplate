@@ -16,6 +16,7 @@
 - Prisma
 - BCrypt
 - Passport
+- Jest
 
 ## :wrench: Installation
 
