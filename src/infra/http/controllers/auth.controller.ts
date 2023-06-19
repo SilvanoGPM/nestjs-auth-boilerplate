@@ -118,7 +118,7 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async _refreshAccessToken(@Body() refreshTokenDto: RefreshTokenDTO) {
+  async refresh(@Body() refreshTokenDto: RefreshTokenDTO) {
     try {
       const { accessToken } = await this.refreshAccessToken.execute(
         refreshTokenDto.token,
