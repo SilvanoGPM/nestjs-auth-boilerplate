@@ -36,7 +36,10 @@ import { RefreshTokenNotFoundError } from '../errors/refresh-token-not-found.err
 import { GoogleLoginUseCase } from '@app/use-cases/refresh-tokens/google-login-use-case';
 import { UserExistsByEmailUseCase } from '@app/use-cases/users/user-exists-by-email-use-case';
 import { CreateUserUseCase } from '@app/use-cases/users/create-user-use-case';
-import { FakeGoogleClientAdapter } from '@test/adapters/fake-google-client-adapter';
+import {
+  DEFAULT_USER,
+  FakeGoogleClientAdapter,
+} from '@test/adapters/fake-google-client-adapter';
 import { GoogleClientAdapter } from '@app/adapters/google-client-adapter';
 
 describe('AuthController', () => {
@@ -125,7 +128,7 @@ describe('AuthController', () => {
     });
   });
 
-  describe('login', () => {
+  describe('localLogin', () => {
     it('should be able to login', async () => {
       const user = makeUser();
       const initialToken = makeRefreshToken({ user });
@@ -170,6 +173,47 @@ describe('AuthController', () => {
           },
           requestMock,
         );
+      }).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('googleLogin', () => {
+    it('should be able to login with google', async () => {
+      const user = DEFAULT_USER;
+      const initialToken = makeRefreshToken({ user });
+
+      refreshTokenRepository.refreshTokens.push(initialToken);
+      userRepository.users.push(user);
+
+      const requestMock = {
+        headers: {
+          'user-agent': 'Unkwnon',
+        },
+      } as Request;
+
+      const { accessToken, refreshToken, name, role, email } =
+        await authController.googleLogin('fake-token', requestMock);
+
+      expect(accessToken).toEqual(initialToken.user.id);
+      expect(refreshToken).toEqual(initialToken.user.id);
+      expect(name).toEqual(initialToken.user.name);
+      expect(email).toEqual(initialToken.user.email);
+      expect(role).toEqual(initialToken.user.role);
+    });
+
+    it('should not be able to login with goole when token is invalid', async () => {
+      googleClientAdapter.verifyIdToken = async () => {
+        throw new Error();
+      };
+
+      const requestMock = {
+        headers: {
+          'user-agent': 'Unkwnon',
+        },
+      } as Request;
+
+      expect(() => {
+        return authController.googleLogin('invalid-fake-token', requestMock);
       }).rejects.toThrow(UnauthorizedException);
     });
   });
