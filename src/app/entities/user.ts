@@ -69,9 +69,11 @@ export class User extends BaseEntity<UserProps> {
   }
 
   toJSON() {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...json } = super.toJSON();
+    const json = super.toJSON();
 
-    return json;
+    return {
+      ...json,
+      password: null,
+    };
   }
 }

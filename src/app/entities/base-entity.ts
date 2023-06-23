@@ -30,10 +30,7 @@ export class BaseEntity<T, O extends keyof T = never> {
     return this._updatedAt;
   }
 
-  toJSON(): Omit<
-    T & { _id: string; _createdAt?: string; _updatedAt?: string },
-    O
-  > {
+  toJSON(): Omit<T, O> {
     return {
       _id: this.id,
       _createdAt: this.createdAt,
